@@ -18,13 +18,8 @@ async function fileDownloader(fileDatas) {
             const localFilePath = `./output/${fileData.file_name}`;
             const writer = fs.createWriteStream(localFilePath);
             downloadResponse.data.pipe(writer);
-
-            return new Promise((resolve, reject) => {
-                writer.on('finish', resolve);
-                writer.on('error', reject);
-            });
         } catch (error) {
-            console.error('Error downloading file:', error);
+            console.log('Error downloading file:', error);
         }
     }
 }

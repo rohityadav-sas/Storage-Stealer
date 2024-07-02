@@ -6,13 +6,16 @@ const file_info_store = require('./file_info_store');
 const fileDownloader = require('./file_downloader');
 
 const input = 'nature.jpg';
-const ouput = './output';
+const output = './output';
 
 async function main() {
-    const files = await fileSplitter(input, ouput)
+    const files = await fileSplitter(input, output)
     const fileData = await uploadFile(files)
-    fileDeleter(files);
-    file_info_store(input, fileData);
+    await fileDeleter(files);
+    await file_info_store(input, fileData);
+    await fileDownloader(fileData);
+    await fileMerger(files, `${output}/merged.jpg`);
+    await fileDeleter(files);
 }
 
 main();
