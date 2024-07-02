@@ -19,7 +19,7 @@ async function uploadFile(filePaths) {
             const response = await axios.post(uploadUrl, formdata);
             fileData.push(response.data.result.document);
         } catch (error) {
-            console.error(error);
+            console.error(error.response.data.description);
         }
     }
     return fileData;
