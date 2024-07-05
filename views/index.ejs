@@ -19,8 +19,8 @@
     <% Object.keys(content).forEach(key => { %>
     <p><%= key %>
       <% content[key].forEach((file,index) => { %>
-      <input type="text" name="<%= key %>[<%= index %>][file_id]" value="<%= file.file_id %>"> <br>
-      <input type="text" name="<%= key %>[<%= index %>][file_name]" value="<%= file.file_name %>"> <br>
+      <input type="hidden" name="<%= key %>[<%= index %>][file_id]" value="<%= file.file_id %>">
+      <input type="hidden" name="<%= key %>[<%= index %>][file_name]" value="<%= file.file_name %>">
       <% }) %>
     </p>
     <% }) %>

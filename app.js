@@ -32,7 +32,7 @@ app.get('/', async (req, res) => {
 
 app.post('/upload', upload.single('fileName'), async (req, res) => {
     const filename = req.file.originalname.split('.')[0];
-    const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 50 * 1024);
+    const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 3 * 1024 * 1024);
     const fileData = await uploadFile(chunks, filename);
     const fileData2 = {
         [req.file.originalname]: [...fileData]
