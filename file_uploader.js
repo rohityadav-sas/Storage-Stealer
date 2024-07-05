@@ -8,18 +8,39 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
 
 const uploadUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`;
 
-async function uploadFile(filePaths) {
+// async function uploadFile(filePaths) {
+//     const fileData = [];
+//     for (const filePath of filePaths) {
+//         const fileStream = fs.createReadStream(filePath);
+//         const formdata = FormData();
+//         formdata.append('chat_id', CHANNEL_ID);
+//         formdata.append('document', fileStream);
+//         try {
+//             const response = await axios.post(uploadUrl, formdata);
+//             fileData.push(response.data.result.document);
+//         } catch (error) {
+//             console.error(error.response.data.description);
+//         }
+//     }
+//     return fileData;
+// }
+
+async function uploadFile(buffers, fileName) {
     const fileData = [];
-    for (const filePath of filePaths) {
-        const fileStream = fs.createReadStream(filePath);
+    let i = 0;
+    for (const buffer of buffers) {
         const formdata = FormData();
         formdata.append('chat_id', CHANNEL_ID);
-        formdata.append('document', fileStream);
+        formdata.append('document', buffer, { filename: `${fileName}.00${i}` });
+        i++;
         try {
-            const response = await axios.post(uploadUrl, formdata);
+            const response = await axios.post(uploadUrl, formdata, {
+                headers: formdata.getHeaders(),
+            }
+            );
             fileData.push(response.data.result.document);
         } catch (error) {
-            console.error(error.response.data.description);
+            console.error(error.response.data);
         }
     }
     return fileData;
