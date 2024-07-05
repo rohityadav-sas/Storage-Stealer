@@ -5,6 +5,7 @@ require('dotenv').config();
 const splitBuffer = require('./splitBuffer');
 const fs = require('fs').promises;
 const uploadFile = require('./file_uploader');
+const fileDownloader = require('./file_downloader');
 const file_info_store = require('./file_info_store');
 
 const app = express();
@@ -19,16 +20,33 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 
-app.get('/', (req, res) => {
-    res.render('index');
+app.get('/', async (req, res) => {
+    const files = await fs.readdir('./uploaded_files');
+    let fileContent = [];
+    for (const file of files) {
+        const content = await fs.readFile(`./uploaded_files/${file}`, 'utf-8');
+        fileContent.push(JSON.parse(content));
+    }
+    res.render('index', { fileContent });
 });
 
 app.post('/upload', upload.single('fileName'), async (req, res) => {
     const filename = req.file.originalname.split('.')[0];
     const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 50 * 1024);
     const fileData = await uploadFile(chunks, filename);
-    await file_info_store(req.file.originalname, fileData);
+    const fileData2 = {
+        [req.file.originalname]: [...fileData]
+    }
+    await file_info_store(req.file.originalname, fileData2);
     res.send('File uploaded successfully');
+});
+
+app.post('/download', async (req, res) => {
+    const receivedFiles = req.body;
+    const file_name = Object.keys(receivedFiles)[0];
+    const fileData = receivedFiles[file_name];
+    await fileDownloader(fileData, file_name);
+    res.send("Downloaded successfully");
 });
 
 
