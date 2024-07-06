@@ -27,10 +27,11 @@ app.get('/', async (req, res) => {
         for (let file of files) {
             if (file.endsWith('.json')) {
                 const data = await fs.readFile(`./uploaded_files/${file}`, 'utf-8');
-                fileContent.push({ [file]: JSON.parse(data) });
+                fileContent.push(JSON.parse(data));
             }
         }
     }
+    console.log(fileContent);
     res.render('index', { fileContent });
 });
 
@@ -47,6 +48,7 @@ app.post('/upload', upload.single('fileName'), async (req, res) => {
 
 app.post('/download', async (req, res) => {
     const receivedFiles = req.body;
+    console.log(receivedFiles);
     const file_name = Object.keys(receivedFiles)[0];
     const fileData = receivedFiles[file_name];
     await fileDownloader(fileData, file_name);
