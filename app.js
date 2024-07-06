@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 const uploadFile = require('./file_uploader');
 const fileDownloader = require('./file_downloader');
 const file_info_store = require('./file_info_store');
+const removeExtension = require('./remove_extension');
 
 const app = express();
 const storage = multer.memoryStorage()
@@ -35,7 +36,7 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/upload', upload.single('fileName'), async (req, res) => {
-    const filename = req.file.originalname.split('.')[0];
+    const filename = removeExtension(req.file.originalname);
     const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 3 * 1024 * 1024);
     const fileData = await uploadFile(chunks, filename);
     const fileData2 = {
