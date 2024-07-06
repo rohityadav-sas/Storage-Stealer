@@ -16,17 +16,19 @@
   <h1>Files:</h1>
   <% if (fileContent.length>0) {%>
   <% fileContent.forEach(content => { %>
-  <form action="/download" method="POST">
+  <form action="/action" method="POST">
     <% Object.keys(content).forEach(key => { %>
     <p><%= key %>
       <% content[key].forEach((file,index) => { %>
       <input type="hidden" name="<%= key %>[<%= index %>][file_id]" value="<%= file.file_id %>">
       <input type="hidden" name="<%= key %>[<%= index %>][file_name]" value="<%= file.file_name %>">
+      <input type="hidden" name="<%= key %>[<%= index %>][message_id]" value="<%= file.message_id %>">
       <% }) %>
     </p>
     <% }) %>
 
-    <button type="submit">Download</button>
+    <button type="submit" name="action" value="download">Download</button>
+    <button type="submit" name="action" value="delete">Delete</button>
   </form>
   <%}) %>
   <% } %>

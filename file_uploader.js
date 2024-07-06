@@ -21,7 +21,13 @@ async function uploadFile(buffers, fileName) {
                 headers: formdata.getHeaders(),
             }
             );
-            fileData.push(response.data.result.document);
+            const info = {
+                file_id: response.data.result.document.file_id,
+                message_id: response.data.result.message_id,
+                file_name: response.data.result.document.file_name,
+                file_size: response.data.result.document.file_size,
+            };
+            fileData.push(info);
         } catch (error) {
             console.error(error.response.data);
         }

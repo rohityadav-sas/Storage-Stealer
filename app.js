@@ -8,6 +8,7 @@ const uploadFile = require('./file_uploader');
 const fileDownloader = require('./file_downloader');
 const file_info_store = require('./file_info_store');
 const removeExtension = require('./remove_extension');
+const deleteFile = require('./file_deleter');
 
 const app = express();
 const storage = multer.memoryStorage()
@@ -37,7 +38,7 @@ app.get('/', async (req, res) => {
 
 app.post('/upload', upload.single('fileName'), async (req, res) => {
     const filename = removeExtension(req.file.originalname);
-    const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 3 * 1024 * 1024);
+    const { chunks, chunkSizes } = splitBuffer(req.file.buffer, 100 * 1024);
     const fileData = await uploadFile(chunks, filename);
     const fileData2 = {
         [req.file.originalname]: [...fileData]
@@ -46,12 +47,21 @@ app.post('/upload', upload.single('fileName'), async (req, res) => {
     res.send('File uploaded successfully');
 });
 
-app.post('/download', async (req, res) => {
-    const receivedFiles = req.body;
+app.post('/action', async (req, res) => {
+    const receivedContent = req.body;
+    const receivedFiles = { [Object.keys(receivedContent)[0]]: receivedContent[Object.keys(receivedContent)[0]] };
+    const { [Object.keys(receivedContent)[0]]: ignore, ...action } = req.body;
     const file_name = Object.keys(receivedFiles)[0];
     const fileData = receivedFiles[file_name];
-    await fileDownloader(fileData, file_name);
-    res.send("Downloaded successfully");
+
+    if (action.action === 'download') {
+        await fileDownloader(fileData, file_name);
+        res.send("Downloaded successfully");
+    }
+    else if (action.action === 'delete') {
+        await deleteFile(fileData, file_name);
+        res.send("Deleted successfully");
+    }
 });
 
 
