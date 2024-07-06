@@ -31,7 +31,6 @@ app.get('/', async (req, res) => {
             }
         }
     }
-    console.log(fileContent);
     res.render('index', { fileContent });
 });
 
@@ -48,7 +47,6 @@ app.post('/upload', upload.single('fileName'), async (req, res) => {
 
 app.post('/download', async (req, res) => {
     const receivedFiles = req.body;
-    console.log(receivedFiles);
     const file_name = Object.keys(receivedFiles)[0];
     const fileData = receivedFiles[file_name];
     await fileDownloader(fileData, file_name);
