@@ -23,9 +23,13 @@ app.use(express.static('public'));
 app.get('/', async (req, res) => {
     const files = await fs.readdir('./uploaded_files');
     let fileContent = [];
-    for (const file of files) {
-        const content = await fs.readFile(`./uploaded_files/${file}`, 'utf-8');
-        fileContent.push(JSON.parse(content));
+    if (files.length > 0) {
+        for (let file of files) {
+            if (file.endsWith('.json')) {
+                const data = await fs.readFile(`./uploaded_files/${file}`, 'utf-8');
+                fileContent.push({ [file]: JSON.parse(data) });
+            }
+        }
     }
     res.render('index', { fileContent });
 });
